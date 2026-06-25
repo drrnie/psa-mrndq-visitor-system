@@ -5,7 +5,7 @@ A tablet-based QR-powered visitor logging kiosk application built with Flutter.
 
 ---
 
-## 📱 Features
+## Features
 
 | Feature | Details |
 |---|---|
@@ -20,7 +20,7 @@ A tablet-based QR-powered visitor logging kiosk application built with Flutter.
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 lib/
@@ -43,7 +43,7 @@ lib/
 
 ---
 
-## ⚙️ Guard Schedule Logic
+## Guard Schedule Logic
 
 - **Guard 1:** Michael Magcamit
 - **Guard 2:** Christian Malapad
@@ -55,7 +55,7 @@ lib/
 
 ---
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Flutter SDK 3.0+
@@ -102,7 +102,7 @@ Make sure the device grants it.
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 ```yaml
 mobile_scanner: ^5.2.3     # QR/Barcode scanning
@@ -115,7 +115,7 @@ path: ^1.9.0               # File path utilities
 
 ---
 
-## 🔐 QR Code Format
+## QR Code Format
 
 Valid QR payload format:
 ```
@@ -129,7 +129,7 @@ Any other QR code will be rejected with an error dialog.
 
 ---
 
-## 🖥️ Kiosk Deployment Tips
+## Kiosk Deployment Tips
 
 1. **Enable kiosk/pinned app mode** on Android (Settings → Security → Screen Pinning)
 2. **Disable sleep/auto-lock** (Settings → Display → Screen Timeout → Never)
@@ -138,7 +138,7 @@ Any other QR code will be rejected with an error dialog.
 
 ---
 
-## 📊 Database Schema
+## Database Schema
 
 ```sql
 CREATE TABLE visitor_logs (
@@ -160,7 +160,7 @@ Database location: Android internal storage → `psa_visitors.db`
 
 ---
 
-## 🛠️ Customization
+## Customization
 
 ### Change guard names / schedule
 Edit `lib/utils/constants.dart`:
@@ -185,7 +185,7 @@ Modify the regex to allow a wider range.
 
 ---
 
-## 📋 Version History
+## Version History
 
 | Version | Date | Notes |
 |---|---|---|
