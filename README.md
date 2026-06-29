@@ -115,83 +115,39 @@ path: ^1.9.0               # File path utilities
 
 ---
 
-## QR Code Format
+## Configuration (white-label)
 
-Valid QR payload format:
-```
-PSA-MRNDQ-VISIT-001
-PSA-MRNDQ-VISIT-002
-...
-PSA-MRNDQ-VISIT-010
-```
+Everything below is editable at runtime in **Settings** (admin mode) and stored
+under the SharedPreferences key `psa_app_config_v1`:
 
-Any other QR code will be rejected with an error dialog.
+- Office identity (organization, office, app title, republic line, QR prefix)
+- Units (name, short name, QR range, color)
+- Special QR ranges (vendor / delivery)
+- Delivery providers (couriers)
+- Guards (names + rotation weeks)
+- Visit purposes
+- Admin password (salted SHA-256)
 
----
+Defaults (first launch): units 001–040 across 4 units, vendor 041–043 & 046–048,
+delivery 044–045 & 049–050, weekly guard rotation.
 
-## Kiosk Deployment Tips
+### Custom ID prefixes
 
-1. **Enable kiosk/pinned app mode** on Android (Settings → Security → Screen Pinning)
-2. **Disable sleep/auto-lock** (Settings → Display → Screen Timeout → Never)
-3. **Enable auto-boot** if tablet restarts (device-specific setting)
-4. **Mount tablet** at reception desk at ergonomic scan height
+The visitor QR/ID prefix is fully customizable — it is **not** limited to
+`PSA-MRNDQ`. Edit it under **Settings → Office Info → QR code prefix** (default
+`PSA-MRNDQ-VISIT-`). The prefix flows through both directions:
 
----
+- **Card generation** — `ConfigService.codeFor(n)` builds each card as
+  `<prefix><NNN>` (e.g. `NCR-QC-VISIT-001`).
+- **Scan matching** — `unitForQR` / `specialTypeForQR` strip the configured
+  prefix before resolving the number, so check-in and check-out follow whatever
+  prefix is set.
 
-## Database Schema
+> Changing the prefix invalidates any visitor cards already printed with the old
+> prefix — only change it when you are reprinting all cards.
 
-```sql
-CREATE TABLE visitor_logs (
-  id             INTEGER PRIMARY KEY AUTOINCREMENT,
-  visitor_id     TEXT NOT NULL,
-  visitor_name   TEXT NOT NULL,
-  purpose        TEXT NOT NULL,
-  agency         TEXT NOT NULL,
-  visitor_type   TEXT NOT NULL DEFAULT 'individual',
-  group_count    INTEGER,
-  guard_on_duty  TEXT NOT NULL,
-  check_in_time  TEXT NOT NULL,
-  check_out_time TEXT,
-  is_active      INTEGER NOT NULL DEFAULT 1
-);
-```
-
-Database location: Android internal storage → `psa_visitors.db`
-
----
-
-## Customization
-
-### Change guard names / schedule
-Edit `lib/utils/constants.dart`:
-```dart
-static const String guard1Name = 'Michael Magcamit';
-static const String guard2Name = 'Christian Malapad';
-static final DateTime rotationAnchor = DateTime(2025, 5, 12);
-```
-
-### Change shift hours
-```dart
-static const TimeOfDay dayStart = TimeOfDay(hour: 7, minute: 0);
-static const TimeOfDay nightStart = TimeOfDay(hour: 19, minute: 0);
-```
-
-### Add more QR codes
-```dart
-static final RegExp validPattern =
-    RegExp(r'^PSA-MRNDQ-VISIT-0(0[1-9]|10)$');
-```
-Modify the regex to allow a wider range.
-
----
-
-## Version History
-
-| Version | Date | Notes |
-|---|---|---|
-| 1.0.0 | May 2025 | Initial release |
-
----
-
-*Developed for PSA Marinduque Provincial Statistical Office*
-*Visitor Management Kiosk System*
+**Not yet prefix-aware (still hardcoded to `PSA_MRNDQ`):** the exported CSV
+filename (`PSA_MRNDQ_<unit>_Visitors_<period>.csv`) and the export folder
+(`PSA_Visitor_Logs`). The admin-QR token and password salt are intentionally
+separate from the visitor prefix. For a fully white-label report filename,
+update `consolidation_service.dart` to derive the prefix from `ConfigService`.
